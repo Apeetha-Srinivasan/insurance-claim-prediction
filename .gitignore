@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.env
+*.log
+
+# Original dataset
+freMTPL2freq*.arff
+
+# Generated synthetic datasets
+synthetic_claims*.csv

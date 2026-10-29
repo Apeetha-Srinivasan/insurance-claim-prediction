@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Claim Prediction</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 30px 15px;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #263b5e;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            border: none;
+            border-radius: 6px;
+            background: #263b5e;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1b2b46;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .claim {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .no-claim {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 12px;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 6px;
+        }
+
+        .note {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        @media (max-width: 520px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>Insurance Claim Prediction</h1>
+    <p class="subtitle">
+        Enter policy and vehicle details to predict claim risk.
+    </p>
+
+    <form method="POST">
+        <div class="form-grid">
+            <div>
+                <label for="Exposure">Exposure</label>
+                <input type="number" id="Exposure" name="Exposure"
+                       min="0" max="1" step="any" value="0.5" required>
+            </div>
+
+            <div>
+                <label for="Area">Area</label>
+                <select id="Area" name="Area" required>
+                    {% for value in ['A','B','C','D','E','F'] %}
+                    <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="VehPower">Vehicle Power</label>
+                <input type="number" id="VehPower" name="VehPower"
+                       min="0" value="6" required>
+            </div>
+
+            <div>
+                <label for="VehAge">Vehicle Age</label>
+                <input type="number" id="VehAge" name="VehAge"
+                       min="0" value="5" required>
+            </div>
+
+            <div>
+                <label for="DrivAge">Driver Age</label>
+                <input type="number" id="DrivAge" name="DrivAge"
+                       min="18" value="40" required>
+            </div>
+
+            <div>
+                <label for="BonusMalus">Bonus-Malus</label>
+                <input type="number" id="BonusMalus" name="BonusMalus"
+                       min="0" value="100" required>
+            </div>
+
+            <div>
+                <label for="VehBrand">Vehicle Brand</label>
+                <select id="VehBrand" name="VehBrand" required>
+                    {% for value in ['B1','B10','B11','B12','B13','B14',
+                                     'B2','B3','B4','B5','B6'] %}
+                    <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="VehGas">Fuel Type</label>
+                <select id="VehGas" name="VehGas" required>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Regular">Regular</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="Region">Region</label>
+                <select id="Region" name="Region" required>
+                    {% for value in [
+                    'R11','R21','R22','R23','R24','R25','R26','R31',
+                    'R41','R42','R43','R52','R53','R54','R72','R73',
+                    'R74','R82','R83','R91','R93','R94'] %}
+                    <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="LogDensity">Log Density</label>
+                <input type="number" id="LogDensity" name="LogDensity"
+                       step="any" value="7.0" required>
+            </div>
+        </div>
+
+        <button type="submit">Predict Claim</button>
+    </form>
+
+    {% if error %}
+    <div class="error">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if prediction is not none %}
+        {% if prediction == 1 %}
+        <div class="result claim">
+            <h2>Claim Predicted</h2>
+            <p>Predicted claim probability: {{ "%.2f"|format(probability * 100) }}%</p>
+        </div>
+        {% else %}
+        <div class="result no-claim">
+            <h2>No Claim Predicted</h2>
+            <p>Predicted claim probability: {{ "%.2f"|format(probability * 100) }}%</p>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <p class="note">
+        Predictions are estimates from a machine-learning model,
+        not guarantees of future claims.
+    </p>
+</div>
+</body>
+</html>
