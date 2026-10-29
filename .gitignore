@@ -8,4 +8,9 @@ __pycache__/
 freMTPL2freq*.arff
 
 # Generated synthetic datasets
-synthetic_claims*.csv
+synthetic_claims*.csvmodel/dnn_real.pkl
+model/dnn_threshold.pkl
+model/logistic_regression_real.pkl
+model/logistic_regression_threshold.pkl
+model/random_forest_real.pkl
+model/random_forest_threshold.pkl
